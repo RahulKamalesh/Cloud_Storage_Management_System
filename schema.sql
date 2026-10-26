@@ -1,0 +1,42 @@
+CREATE DATABASE IF NOT EXISTS cloudstorage;
+USE cloudstorage;
+
+CREATE TABLE IF NOT EXISTS users(
+ user_id INT PRIMARY KEY AUTO_INCREMENT,
+ name VARCHAR(100) NOT NULL,
+ username VARCHAR(50) NOT NULL UNIQUE,
+ email VARCHAR(100) NOT NULL UNIQUE,
+ password VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS folders(
+ folder_id INT PRIMARY KEY AUTO_INCREMENT,
+ folder_name VARCHAR(100) NOT NULL,
+ owner_id INT NOT NULL,
+ UNIQUE(folder_name, owner_id),
+ FOREIGN KEY (owner_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS files(
+ file_id INT PRIMARY KEY AUTO_INCREMENT,
+ file_name VARCHAR(255) NOT NULL,
+ file_type VARCHAR(50),
+ file_size BIGINT,
+ owner_id INT NOT NULL,
+ folder_id INT NULL,
+ storage_path VARCHAR(500) NOT NULL,
+ upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY (owner_id) REFERENCES users(user_id) ON DELETE CASCADE,
+ FOREIGN KEY (folder_id) REFERENCES folders(folder_id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS shared_files(
+ share_id INT PRIMARY KEY AUTO_INCREMENT,
+ file_id INT NOT NULL,
+ receiver_id INT NOT NULL,
+ permission VARCHAR(30) NOT NULL,
+ FOREIGN KEY (file_id) REFERENCES files(file_id) ON DELETE CASCADE,
+ FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+SHOW TABLES;
